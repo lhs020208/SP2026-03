@@ -1,16 +1,6 @@
 //--------------------------------------------------------
 //SimpleGame.cpp
 //--------------------------------------------------------
-/*
-Copyright 2022 Lee Taek Hee (Tech University of Korea)
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the What The Hell License. Do it plz.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY.
-*/
-
 #include "stdafx.h"
 #include <iostream>
 #include "Dependencies\glew.h"
@@ -26,8 +16,8 @@ void RenderScene(void)
 	glClearColor(0.0f, 0.3f, 0.3f, 1.0f);
 
 	// Renderer Test
-	g_Renderer->DrawSolidRect(0, 0, 0, 4, 1, 0, 1, 1);
-
+	//g_Renderer->DrawSolidRect(0, 0, 0, 4, 1, 0, 1, 1);
+	g_Renderer->DrawSolidTriangle();
 	glutSwapBuffers();
 }
 

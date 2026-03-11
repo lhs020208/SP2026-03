@@ -22,7 +22,7 @@ out/
 *.tlog
 *.lastbuildstate
 *.exe
-*.dll
+#*.dll
 *.lib
 *.exp
 
