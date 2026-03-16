@@ -18,7 +18,7 @@ public:
 
 	bool IsInitialized();
 	void DrawSolidRect(float x, float y, float z, float size, float r, float g, float b, float a);
-	void DrawSolidTriangle();
+	void DrawTriangle();
 
 private:
 	void Initialize(int windowSizeX, int windowSizeY);
@@ -37,6 +37,6 @@ private:
 	GLuint m_SolidRectShader = 0;
 
 	GLuint m_VBOTriangle = 0;
-	GLuint m_SolidTriangleShader = 0;
+	GLuint m_TriangleShader = 0;
 };
 
