@@ -31,7 +31,7 @@ void Renderer::Initialize(int windowSizeX, int windowSizeY)
 	srand((unsigned int)time(NULL));
 
 	// 파티클 생성
-	GenParticles(100000);
+	GenParticles(1000);
 
 	if (m_SolidRectShader > 0 && m_VBORect > 0 && m_TriangleShader > 0 && m_VBOTriangle > 0)
 	{
@@ -67,11 +67,12 @@ void Renderer::GenParticles(int num)
 	float centerY = 0.0f;
 	float size = 0.03f;
 	float mass = 1.0f;
-	float RV = 0.0f;
+	float RV1 = 0.0f;
+	float RV2 = 0.0f;
 
-	// 정점 하나당: x,y,z,mass,vx,vy,RV = 7개 float
+	// 정점 하나당: x,y,z,mass,vx,vy,RV1,RV2 = 8개 float
 	// 파티클 하나당 정점 6개
-	int totalFloatCount = num * 6 * 7;
+	int totalFloatCount = num * 6 * 8;
 	float* particles = new float[totalFloatCount];
 
 	int idx = 0;
@@ -85,14 +86,15 @@ void Renderer::GenParticles(int num)
 		//float vy = radius * sin(theta) + 1.0f;
 
 		float vx = -1.0f + 2.0f * ((float)rand() / (float)RAND_MAX);
-		float vy = 0.5f + 1.5f * ((float)rand() / (float)RAND_MAX);
+		float vy = -1.0f + 2.0f * ((float)rand() / (float)RAND_MAX);
 
 		float x0 = centerX - size / 2;
 		float y0 = centerY - size / 2;
 		float x1 = centerX + size / 2;
 		float y1 = centerY + size / 2;
 
-		RV = (float)rand() / (float)RAND_MAX;
+		RV1 = (float)rand() / (float)RAND_MAX;
+		RV2 = (float)rand() / (float)RAND_MAX;
 
 		// v0
 		particles[idx++] = x0;
@@ -101,7 +103,8 @@ void Renderer::GenParticles(int num)
 		particles[idx++] = mass;
 		particles[idx++] = vx;
 		particles[idx++] = vy;
-		particles[idx++] = RV;
+		particles[idx++] = RV1;
+		particles[idx++] = RV2;
 
 		// v1
 		particles[idx++] = x1;
@@ -110,7 +113,8 @@ void Renderer::GenParticles(int num)
 		particles[idx++] = mass;
 		particles[idx++] = vx;
 		particles[idx++] = vy;
-		particles[idx++] = RV;
+		particles[idx++] = RV1;
+		particles[idx++] = RV2;
 
 		// v2
 		particles[idx++] = x1;
@@ -119,7 +123,8 @@ void Renderer::GenParticles(int num)
 		particles[idx++] = mass;
 		particles[idx++] = vx;
 		particles[idx++] = vy;
-		particles[idx++] = RV;
+		particles[idx++] = RV1;
+		particles[idx++] = RV2;
 
 		// v3
 		particles[idx++] = x0;
@@ -128,7 +133,8 @@ void Renderer::GenParticles(int num)
 		particles[idx++] = mass;
 		particles[idx++] = vx;
 		particles[idx++] = vy;
-		particles[idx++] = RV;
+		particles[idx++] = RV1;
+		particles[idx++] = RV2;
 
 		// v4
 		particles[idx++] = x1;
@@ -137,7 +143,8 @@ void Renderer::GenParticles(int num)
 		particles[idx++] = mass;
 		particles[idx++] = vx;
 		particles[idx++] = vy;
-		particles[idx++] = RV;
+		particles[idx++] = RV1;
+		particles[idx++] = RV2;
 
 		// v5
 		particles[idx++] = x0;
@@ -146,7 +153,8 @@ void Renderer::GenParticles(int num)
 		particles[idx++] = mass;
 		particles[idx++] = vx;
 		particles[idx++] = vy;
-		particles[idx++] = RV;
+		particles[idx++] = RV1;
+		particles[idx++] = RV2;
 	}
 
 	glBindBuffer(GL_ARRAY_BUFFER, m_VBOTriangle);
@@ -285,26 +293,30 @@ void Renderer::DrawTriangle()
 	int attribPosition = glGetAttribLocation(m_TriangleShader, "a_Position");
 	int attribMass = glGetAttribLocation(m_TriangleShader, "a_Mass");
 	int attribVel = glGetAttribLocation(m_TriangleShader, "a_Vel");
-	int attribRV = glGetAttribLocation(m_TriangleShader, "a_RV");
+	int attribRV1 = glGetAttribLocation(m_TriangleShader, "a_RV1");
+	int attribRV2 = glGetAttribLocation(m_TriangleShader, "a_RV2");
 
 	glEnableVertexAttribArray(attribPosition);
 	glEnableVertexAttribArray(attribMass);
 	glEnableVertexAttribArray(attribVel);
-	glEnableVertexAttribArray(attribRV);
+	glEnableVertexAttribArray(attribRV1);
+	glEnableVertexAttribArray(attribRV2);
 
 	glBindBuffer(GL_ARRAY_BUFFER, m_VBOTriangle);
 
-	glVertexAttribPointer(attribPosition, 3, GL_FLOAT, GL_FALSE, 7 * sizeof(float), 0);
-	glVertexAttribPointer(attribMass, 1, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (GLvoid*)(sizeof(float) * 3));
-	glVertexAttribPointer(attribVel, 2, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (GLvoid*)(sizeof(float) * 4));
-	glVertexAttribPointer(attribRV, 1, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (GLvoid*)(sizeof(float) * 6));
+	glVertexAttribPointer(attribPosition, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), 0);
+	glVertexAttribPointer(attribMass, 1, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (GLvoid*)(sizeof(float) * 3));
+	glVertexAttribPointer(attribVel, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (GLvoid*)(sizeof(float) * 4));
+	glVertexAttribPointer(attribRV1, 1, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (GLvoid*)(sizeof(float) * 6));
+	glVertexAttribPointer(attribRV2, 1, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (GLvoid*)(sizeof(float) * 7));
 
 	glDrawArrays(GL_TRIANGLES, 0, 6 * m_NumParticles);
 
 	glDisableVertexAttribArray(attribPosition);
 	glDisableVertexAttribArray(attribMass);
 	glDisableVertexAttribArray(attribVel);
-	glDisableVertexAttribArray(attribRV);
+	glDisableVertexAttribArray(attribRV1);
+	glDisableVertexAttribArray(attribRV2);
 }
 
 void Renderer::GetGLPosition(float x, float y, float* newX, float* newY)
