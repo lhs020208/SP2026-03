@@ -122,8 +122,8 @@ void Thrust2()
 		float moveX = -1.05 + nt * 2.1;
 
 		// 앞쪽(좌측)은 두껍고 둥글게, 뒤로 갈수록 급격히 가늘어짐
-		float widthY = 0.22 * pow(1.0 - nt, 1.8);
-		float widthX = 0.10 * pow(1.0 - nt, 0.7);
+		float widthY = 2.2 * pow(1.0 - nt, 1.8);
+		float widthX = 1.0 * pow(1.0 - nt, 0.7);
 
 		// 화염 머리 쪽을 조금 더 부풀리기
 		float headBulge = 1.0 + 0.8 * exp(-nt * 8.0);
@@ -157,5 +157,5 @@ void Thrust2()
 
 void main()
 {
-	Thrust2();
+	Thrust();
 }

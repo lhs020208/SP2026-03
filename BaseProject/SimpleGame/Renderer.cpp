@@ -23,6 +23,7 @@ void Renderer::Initialize(int windowSizeX, int windowSizeY)
 	//Load shaders
 	m_SolidRectShader = CompileShaders("./Shaders/SolidRect.vs", "./Shaders/SolidRect.fs");
 	m_TriangleShader = CompileShaders("./Shaders/Triangle.vs", "./Shaders/Triangle.fs");
+	m_FSShader = CompileShaders("./Shaders/FS.vs", "./Shaders/FS.fs");
 
 	//Create VBOs
 	CreateVertexBufferObjects();
@@ -30,10 +31,14 @@ void Renderer::Initialize(int windowSizeX, int windowSizeY)
 	// 랜덤 시드
 	srand((unsigned int)time(NULL));
 
-	// 파티클 생성
-	GenParticles(1000);
+	// 필요하면 파티클 생성
+	// GenParticles(1000);
 
-	if (m_SolidRectShader > 0 && m_VBORect > 0 && m_TriangleShader > 0 && m_VBOTriangle > 0)
+	if (m_SolidRectShader > 0 &&
+		m_TriangleShader > 0 &&
+		m_FSShader > 0 &&
+		m_VBORect > 0 &&
+		m_VBOFS > 0)
 	{
 		m_Initialized = true;
 	}
@@ -53,10 +58,28 @@ void Renderer::CreateVertexBufferObjects()
 	};
 
 	glGenBuffers(1, &m_VBORect);
+
 	glBindBuffer(GL_ARRAY_BUFFER, m_VBORect);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(rect), rect, GL_STATIC_DRAW);
 
 	glGenBuffers(1, &m_VBOTriangle);
+
+	float triangle[] //x, y, z, tx, ty
+		=
+	{
+		-1,-1,0,0,1,	//v0
+		1,1,0,1,0,		//v1
+		-1,1,0,0,0,		//v2
+
+		-1,-1,0,0,1,	//v0
+		1,-1,0,1,1,		//v1
+		1,1,0,1,0,		//v2
+	};
+
+	glGenBuffers(1, &m_VBOFS);
+	glBindBuffer(GL_ARRAY_BUFFER, m_VBOFS);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(triangle), triangle, GL_STATIC_DRAW);
+
 }
 
 void Renderer::GenParticles(int num)
@@ -328,6 +351,29 @@ void Renderer::DrawTriangle()
 	glDisableVertexAttribArray(attribVel);
 	glDisableVertexAttribArray(attribRV1);
 	glDisableVertexAttribArray(attribRV2);
+}
+
+void Renderer::DrawFS()
+{
+	gTime += 0.0003f;
+	GLuint shader = m_FSShader;
+	glUseProgram(shader);
+
+	int uTime = glGetUniformLocation(shader, "u_Time");
+	if (uTime >= 0)
+		glUniform1f(uTime, gTime);
+
+	int attribPosition = glGetAttribLocation(shader, "a_Position");
+	int attribTex = glGetAttribLocation(shader, "a_Tex");
+
+	glEnableVertexAttribArray(attribPosition);
+	glEnableVertexAttribArray(attribTex);
+	glBindBuffer(GL_ARRAY_BUFFER, m_VBOFS);
+
+	glVertexAttribPointer(attribPosition, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), 0);
+	glVertexAttribPointer(attribTex, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (GLvoid*)(3 * sizeof(float)));
+
+	glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 
 void Renderer::GetGLPosition(float x, float y, float* newX, float* newY)
