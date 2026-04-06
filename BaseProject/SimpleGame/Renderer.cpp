@@ -34,6 +34,18 @@ void Renderer::Initialize(int windowSizeX, int windowSizeY)
 	// 필요하면 파티클 생성
 	// GenParticles(1000);
 
+	int index = 0;
+	for (int i = 0; i < 500; i++) {
+		float x = (float)rand() / (float)RAND_MAX;
+		float y = (float)rand() / (float)RAND_MAX;
+		float sTime = 5.0f * (float)rand() / (float)RAND_MAX;
+		float lTime = 0.5f * (float)rand() / (float)RAND_MAX;
+		m_RainInfo[index] = x; index++;
+		m_RainInfo[index] = y; index++;
+		m_RainInfo[index] = sTime; index++;
+		m_RainInfo[index] = lTime; index++;
+	}
+
 	if (m_SolidRectShader > 0 &&
 		m_TriangleShader > 0 &&
 		m_FSShader > 0 &&
@@ -355,13 +367,15 @@ void Renderer::DrawTriangle()
 
 void Renderer::DrawFS()
 {
-	gTime += 0.0003f;
+	gTime += 0.0009f;
 	GLuint shader = m_FSShader;
 	glUseProgram(shader);
 
 	int uTime = glGetUniformLocation(shader, "u_Time");
-	if (uTime >= 0)
 		glUniform1f(uTime, gTime);
+
+	int uPoints = glGetUniformLocation(shader, "u_Points");
+		glUniform4fv(uPoints, 500, m_RainInfo);
 
 	int attribPosition = glGetAttribLocation(shader, "a_Position");
 	int attribTex = glGetAttribLocation(shader, "a_Tex");

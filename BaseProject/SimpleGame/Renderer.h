@@ -44,4 +44,6 @@ private:
 	GLuint m_FSShader   = 0;
 
 	int m_NumParticles = 0;
+
+	float m_RainInfo[500 * 4];
 };
