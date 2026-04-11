@@ -23,7 +23,7 @@ void Renderer::Initialize(int windowSizeX, int windowSizeY)
 	//Load shaders
 	m_SolidRectShader = CompileShaders("./Shaders/SolidRect.vs", "./Shaders/SolidRect.fs");
 	m_TriangleShader = CompileShaders("./Shaders/Triangle.vs", "./Shaders/Triangle.fs");
-	m_FSShader = CompileShaders("./Shaders/FS.vs", "./Shaders/FS.fs");
+	m_FSShader = CompileShaders("./Shaders/FS.vs", "./Shaders/FS.glsl");
 
 	//Create VBOs
 	CreateVertexBufferObjects();
@@ -327,7 +327,7 @@ float gTime = 0;
 
 void Renderer::DrawTriangle()
 {
-	gTime += 0.0003f;
+	//gTime += 0.0003f;
 	glUseProgram(m_TriangleShader);
 
 	int uTime = glGetUniformLocation(m_TriangleShader, "u_Time");
@@ -367,7 +367,7 @@ void Renderer::DrawTriangle()
 
 void Renderer::DrawFS()
 {
-	gTime += 0.0009f;
+	gTime += 0.009f;
 	GLuint shader = m_FSShader;
 	glUseProgram(shader);
 

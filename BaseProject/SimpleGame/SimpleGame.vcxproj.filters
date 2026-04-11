@@ -58,7 +58,7 @@
     <None Include="Shaders\FS.vs">
       <Filter>소스 파일\Shaders</Filter>
     </None>
-    <None Include="Shaders\FS.fs">
+    <None Include="Shaders\FS.glsl">
       <Filter>소스 파일\Shaders</Filter>
     </None>
   </ItemGroup>
