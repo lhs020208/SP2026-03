@@ -21,6 +21,7 @@ public:
 	void DrawTriangle();
 	void DrawFS();
 	void GenParticles(int num);
+	GLuint CreatePngTexture(char* filePath, GLuint samplingMethod);
 
 private:
 	void Initialize(int windowSizeX, int windowSizeY);
@@ -46,4 +47,9 @@ private:
 	int m_NumParticles = 0;
 
 	float m_RainInfo[500 * 4];
+
+	//Texture
+	GLuint m_RgbTexture = 0;
+	GLuint m_NumTexture[10];
+	GLuint m_NumsTexture = 0;
 };
