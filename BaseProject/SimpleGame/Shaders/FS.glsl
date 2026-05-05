@@ -79,6 +79,11 @@ void Flame()
 
 void textureSampling()
 {
+	FragColor = texture(u_RGBTex, vec2(v_Tex.x, v_Tex.y));
+}
+
+void textureSamplingBluh()
+{
 	vec4 c0;
 	vec4 c1;
 	vec4 c2;
@@ -98,7 +103,50 @@ void textureSampling()
 	FragColor = sum;
 }
 
+void textureSamplingMix1()
+{
+	float tx = v_Tex.x;
+	float ty = v_Tex.y;
+	ty = -abs(1 - v_Tex.y * 2);
+
+	vec2 tex = vec2(tx, ty);
+	FragColor = texture(u_RGBTex, tex);
+
+}
+
+void textureSamplingMix2()
+{
+	float tx = v_Tex.x;
+	float ty = v_Tex.y;
+
+	tx = fract(tx * 3);
+	ty = ty / 3;
+
+	float offsetX = 0;
+	float offsetY = (2 - floor(v_Tex.x * 3))/3;
+	
+
+	vec2 tex = vec2(tx + offsetX, ty + offsetY);
+	FragColor = texture(u_RGBTex, tex);
+}
+
+void textureSamplingMix3()
+{
+	float tx = v_Tex.x;
+	float ty = v_Tex.y;
+
+	tx = fract(tx * 3);
+	ty = ty / 3;
+
+	float offsetX = 0;
+	float offsetY = (floor(v_Tex.x * 3))/3;
+	
+
+	vec2 tex = vec2(tx + offsetX, ty + offsetY);
+	FragColor = texture(u_RGBTex, tex);
+}
+
 void main()
 {
-	textureSampling();
+	textureSamplingMix3();
 }
