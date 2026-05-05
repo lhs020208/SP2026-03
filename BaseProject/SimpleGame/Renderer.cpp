@@ -7,6 +7,7 @@
 
 #include <ctime>
 #include <assert.h>
+#include "Windows.h"
 
 Renderer::Renderer(int windowSizeX, int windowSizeY)
 {
@@ -423,9 +424,11 @@ void Renderer::DrawTriangle()
 	glDisableVertexAttribArray(attribRV2);
 }
 
+int g_CurrNum = 0;
+
 void Renderer::DrawFS()
 {
-	gTime += 0.009f;
+	gTime += 0.09f;
 	GLuint shader = m_FSShader;
 	glUseProgram(shader);
 
@@ -433,9 +436,44 @@ void Renderer::DrawFS()
 	glUniform1f(uTime, gTime);
 
 	int uRGBTexture = glGetUniformLocation(shader, "u_RGBTex");
-	glUniform1f(uRGBTexture, 0);
+	glUniform1i(uRGBTexture, 0);
+	int uCurrNumTex = glGetUniformLocation(shader, "u_CurrNumTex");
+	glUniform1i(uCurrNumTex, g_CurrNum + 2);
+	int uNumsTex = glGetUniformLocation(shader, "u_NumsTex");
+	glUniform1i(uNumsTex, 1);
+	int uinputNum = glGetUniformLocation(shader, "u_inputNum");
+	glUniform1i(uinputNum, g_CurrNum);
+
+	g_CurrNum++;
+	if (g_CurrNum > 9) g_CurrNum = 0;
+	Sleep(200);
+
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, m_RgbTexture);
+
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, m_NumsTexture);
+
+	glActiveTexture(GL_TEXTURE2);
+	glBindTexture(GL_TEXTURE_2D, m_NumTexture[0]);
+	glActiveTexture(GL_TEXTURE3);
+	glBindTexture(GL_TEXTURE_2D, m_NumTexture[1]);
+	glActiveTexture(GL_TEXTURE4);
+	glBindTexture(GL_TEXTURE_2D, m_NumTexture[2]);
+	glActiveTexture(GL_TEXTURE5);
+	glBindTexture(GL_TEXTURE_2D, m_NumTexture[3]);
+	glActiveTexture(GL_TEXTURE6);
+	glBindTexture(GL_TEXTURE_2D, m_NumTexture[4]);
+	glActiveTexture(GL_TEXTURE7);
+	glBindTexture(GL_TEXTURE_2D, m_NumTexture[5]);
+	glActiveTexture(GL_TEXTURE8);
+	glBindTexture(GL_TEXTURE_2D, m_NumTexture[6]);
+	glActiveTexture(GL_TEXTURE9);
+	glBindTexture(GL_TEXTURE_2D, m_NumTexture[7]);
+	glActiveTexture(GL_TEXTURE10);
+	glBindTexture(GL_TEXTURE_2D, m_NumTexture[8]);
+	glActiveTexture(GL_TEXTURE11);
+	glBindTexture(GL_TEXTURE_2D, m_NumTexture[9]);
 
 	int uPoints = glGetUniformLocation(shader, "u_Points");
 	glUniform4fv(uPoints, 500, m_RainInfo);
