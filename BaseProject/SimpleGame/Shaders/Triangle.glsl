@@ -9,6 +9,9 @@ in float v_Grey;
 in vec2 v_Tex;
 in vec3 v_Color;
 
+uniform sampler2D u_ParticleTex;
+uniform sampler2D u_ParticleSpriteTex;
+
 void CircleShape()
 {
 	float d = distance(vec2(0.5,0.5), v_Tex);
@@ -20,7 +23,35 @@ void CircleShape()
 	}
 }
 
+void SingleTexture()
+{
+	FragColor = v_Grey * texture(u_ParticleTex, v_Tex);
+}
+
+void AnimTexture()
+{
+	float resolX = 16.0;
+	float resolY = 1.0;
+	float time = v_Grey * 10.0; // Adjust the speed of animation by changing the multiplier
+
+	float index = floor((1.0 - time) * (resolX * resolY - 1));
+	float tx = v_Tex.x / resolX;
+	float ty = v_Tex.y / resolY;
+
+	float offsetX = fract(index / resolX);
+	float offsetY = floor(index / resolX) / resolY;
+
+	vec2 tex = vec2(tx + offsetX, ty + offsetY);
+
+	float d = distance(vec2(0.5,0.5), v_Tex);
+	float value = clamp(0.5 - d, 0, 0.5) * 2.0;
+
+	FragColor = v_Grey * texture(u_ParticleSpriteTex, tex);
+	FragColor.a *= value;
+}
+
+
 void main()
 {
-	CircleShape();
+	AnimTexture();
 }

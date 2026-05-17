@@ -52,4 +52,6 @@ private:
 	GLuint m_RgbTexture = 0;
 	GLuint m_NumTexture[10];
 	GLuint m_NumsTexture = 0;
+	GLuint m_ParticleTexture = 0;
+	GLuint m_ParticleSpriteTexture = 0;
 };

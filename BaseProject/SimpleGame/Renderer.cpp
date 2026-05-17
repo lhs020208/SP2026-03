@@ -32,6 +32,8 @@ void Renderer::Initialize(int windowSizeX, int windowSizeY)
 	//Load Textures
 	m_RgbTexture = CreatePngTexture("./Textures/rgb.png", GL_NEAREST);
 	m_NumsTexture = CreatePngTexture("./Textures/numbers.png", GL_NEAREST);
+	m_ParticleTexture = CreatePngTexture("./Textures/particle.png", GL_NEAREST);
+	m_ParticleSpriteTexture = CreatePngTexture("./Textures/particle_sprite.png", GL_NEAREST);
 	for (int i = 0; i < 10; i++) {
 		char filePath[256];
 		sprintf_s(filePath, "Textures/%d.png", i);
@@ -428,6 +430,15 @@ void Renderer::DrawTriangle()
 
 	int uTime = glGetUniformLocation(m_TriangleShader, "u_Time");
 	glUniform1f(uTime, gTime);
+	int uParticle = glGetUniformLocation(m_TriangleShader, "u_ParticleTex");
+	glUniform1i(uParticle, 0);
+	int uParticleSprite = glGetUniformLocation(m_TriangleShader, "u_ParticleSpriteTex");
+	glUniform1i(uParticleSprite, 1);
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, m_ParticleTexture);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, m_ParticleSpriteTexture);
 
 	int attribPosition = glGetAttribLocation(m_TriangleShader, "a_Position");
 	int attribMass = glGetAttribLocation(m_TriangleShader, "a_Mass");
