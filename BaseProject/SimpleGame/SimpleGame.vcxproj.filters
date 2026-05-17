@@ -55,7 +55,7 @@
     <None Include="Shaders\SolidRect.vs">
       <Filter>소스 파일\Shaders</Filter>
     </None>
-    <None Include="Shaders\Triangle.fs">
+    <None Include="Shaders\Triangle.glsl">
       <Filter>소스 파일\Shaders</Filter>
     </None>
     <None Include="Shaders\Triangle.vs">
