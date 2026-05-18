@@ -20,8 +20,10 @@ public:
 	void DrawSolidRect(float x, float y, float z, float size, float r, float g, float b, float a);
 	void DrawTriangle();
 	void DrawFS();
+	void DrawDummy();
 	void GenParticles(int num);
 	GLuint CreatePngTexture(char* filePath, GLuint samplingMethod);
+	void GenDummyMesh(int rx, int ry);
 
 private:
 	void Initialize(int windowSizeX, int windowSizeY);
@@ -40,9 +42,13 @@ private:
 	GLuint m_VBOTriangle = 0;
 	GLuint m_VBOFS = 0;
 
+	GLuint m_VBO_Dummy = 0;
+	GLuint m_VBO_DummyCount = 0;
+
 	GLuint m_SolidRectShader = 0;
 	GLuint m_TriangleShader = 0;
 	GLuint m_FSShader   = 0;
+	GLuint m_DummyShader = 0;
 
 	int m_NumParticles = 0;
 
