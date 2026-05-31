@@ -35,6 +35,7 @@ void Renderer::Initialize(int windowSizeX, int windowSizeY)
 	m_NumsTexture = CreatePngTexture("./Textures/numbers.png", GL_NEAREST);
 	m_ParticleTexture = CreatePngTexture("./Textures/particle.png", GL_NEAREST);
 	m_ParticleSpriteTexture = CreatePngTexture("./Textures/particle_sprite.png", GL_NEAREST);
+	m_PHTexture = CreatePngTexture("./Textures/MenuImage.png", GL_NEAREST);
 	for (int i = 0; i < 10; i++) {
 		char filePath[256];
 		sprintf_s(filePath, "Textures/%d.png", i);
@@ -640,7 +641,12 @@ void Renderer::DrawDummy()
 
 	int uTime = glGetUniformLocation(shader, "u_Time");
 	glUniform1f(uTime, gTime);
-	gTime += 0.0016f;
+	gTime += 0.016f;
+
+	int uPHTex = glGetUniformLocation(shader, "u_PHTex");
+	glUniform1i(uPHTex, 0);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, m_PHTexture);
 
 	int aPos = glGetAttribLocation(shader, "a_Position");
 	glEnableVertexAttribArray(aPos);
