@@ -17,12 +17,14 @@ mat2 rotate2D(float radian)
 	return mat2(cos(radian), -sin(radian), sin(radian), cos(radian));
 }
 
-void main()
+void Frag()
 {
-	//FragColor = vec4(v_Grey);
-	//FragColor = vec4(v_Tex,0,1);
-
 	vec2 newTex = rotate2D(-C_PI / 2.0) * v_Tex;
 
 	FragColor = texture(u_PHTex, newTex);
+}
+
+void main()
+{
+	FragColor = vec4(v_Grey);
 }

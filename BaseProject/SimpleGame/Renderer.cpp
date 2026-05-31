@@ -51,14 +51,15 @@ void Renderer::Initialize(int windowSizeX, int windowSizeY)
 	// 필요하면 파티클 생성
 	//GenParticles(1000);
 
-	GenDummyMesh(24, 24);
+	GenDummyMesh(200, 200);
 
 	int index = 0;
 	for (int i = 0; i < 500; i++) {
 		float x = (float)rand() / (float)RAND_MAX;
 		float y = (float)rand() / (float)RAND_MAX;
-		float sTime = 5.0f * (float)rand() / (float)RAND_MAX;
+		float sTime = 3.0f * (float)rand() / (float)RAND_MAX;
 		float lTime = 0.5f * (float)rand() / (float)RAND_MAX;
+
 		m_RainInfo[index] = x; index++;
 		m_RainInfo[index] = y; index++;
 		m_RainInfo[index] = sTime; index++;
@@ -647,6 +648,9 @@ void Renderer::DrawDummy()
 	glUniform1i(uPHTex, 0);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, m_PHTexture);
+
+	int uPoints = glGetUniformLocation(shader, "u_RainInfo");
+	glUniform4fv(uPoints, 500, m_RainInfo);
 
 	int aPos = glGetAttribLocation(shader, "a_Position");
 	glEnableVertexAttribArray(aPos);
