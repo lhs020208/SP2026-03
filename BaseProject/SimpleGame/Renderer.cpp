@@ -29,6 +29,7 @@ void Renderer::Initialize(int windowSizeX, int windowSizeY)
 	m_TriangleShader = CompileShaders("./Shaders/Triangle.vs", "./Shaders/Triangle.glsl");
 	m_FSShader = CompileShaders("./Shaders/FS.vs", "./Shaders/FS.glsl");
 	m_DummyShader = CompileShaders("./Shaders/Dummy.vs", "./Shaders/Dummy.glsl");
+	m_TextureShader = CompileShaders("./Shaders/Texture.vs", "./Shaders/Texture.glsl");
 
 	//Load Textures
 	m_RgbTexture = CreatePngTexture("./Textures/rgb.png", GL_NEAREST);
@@ -49,9 +50,10 @@ void Renderer::Initialize(int windowSizeX, int windowSizeY)
 	srand((unsigned int)time(NULL));
 
 	// 필요하면 파티클 생성
-	//GenParticles(1000);
+	GenParticles(1000);
 
 	GenDummyMesh(200, 200);
+	GenFBOs();
 
 	int index = 0;
 	for (int i = 0; i < 500; i++) {
@@ -207,6 +209,99 @@ void Renderer::GenDummyMesh(int rx, int ry)
 	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * (pointCountX - 1) * (pointCountY - 1) * 2 * 3 * 3, vertices, GL_STATIC_DRAW);
 }
 
+void Renderer::GenFBOs()
+{
+	//Gen Texture
+	GLuint textureId; glGenTextures(1, &m_FBO_Texture);
+	glBindTexture(GL_TEXTURE_2D, m_FBO_Texture);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); 
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR); 
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE); 
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE); 
+	glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE); 
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 512, 512, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+
+	//Gen Depth(Render buffer)
+	GLuint depthBuffer; 
+	glGenRenderbuffers(1, &depthBuffer);
+	glBindRenderbuffer(GL_RENDERBUFFER, depthBuffer); 
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, 512, 512); 
+	glBindRenderbuffer(GL_RENDERBUFFER, 0);
+
+	//Gen FBO, attach(tex, dep render b)
+	glGenFramebuffers(1, &m_FBO);
+	glBindFramebuffer(GL_FRAMEBUFFER, m_FBO);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_FBO_Texture, 0);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBuffer);
+
+	//check!!
+	GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+	if (status != GL_FRAMEBUFFER_COMPLETE)
+	{
+		assert(0);
+	}
+
+	//Gen Texture
+	textureId; glGenTextures(1, &m_FBO1_Texture);
+	glBindTexture(GL_TEXTURE_2D, m_FBO1_Texture);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 512, 512, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+
+	//Gen Depth(Render buffer)
+	glGenRenderbuffers(1, &depthBuffer);
+	glBindRenderbuffer(GL_RENDERBUFFER, depthBuffer);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, 512, 512);
+	glBindRenderbuffer(GL_RENDERBUFFER, 0);
+
+	//Gen FBO, attach(tex, dep render b)
+	glGenFramebuffers(1, &m_FBO1);
+	glBindFramebuffer(GL_FRAMEBUFFER, m_FBO1);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_FBO1_Texture, 0);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBuffer);
+
+	//check!!
+	status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+	if (status != GL_FRAMEBUFFER_COMPLETE)
+	{
+		assert(0);
+	}
+
+	//Gen Texture
+	textureId; glGenTextures(1, &m_FBO2_Texture);
+	glBindTexture(GL_TEXTURE_2D, m_FBO2_Texture);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 512, 512, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+
+	//Gen Depth(Render buffer)
+	glGenRenderbuffers(1, &depthBuffer);
+	glBindRenderbuffer(GL_RENDERBUFFER, depthBuffer);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, 512, 512);
+	glBindRenderbuffer(GL_RENDERBUFFER, 0);
+
+	//Gen FBO, attach(tex, dep render b)
+	glGenFramebuffers(1, &m_FBO2);
+	glBindFramebuffer(GL_FRAMEBUFFER, m_FBO2);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_FBO2_Texture, 0);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBuffer);
+
+	//check!!
+	status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+	if (status != GL_FRAMEBUFFER_COMPLETE)
+	{
+		assert(0);
+	}
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
 void Renderer::CreateVertexBufferObjects()
 {
 	float rect[] =
@@ -237,6 +332,22 @@ void Renderer::CreateVertexBufferObjects()
 	glGenBuffers(1, &m_VBOFS);
 	glBindBuffer(GL_ARRAY_BUFFER, m_VBOFS);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(triangle), triangle, GL_STATIC_DRAW);
+
+	float texrect[] =
+	{
+		-1, -1, 0,
+		1, 1, 0,
+		-1, 1, 0,
+
+		-1, -1, 0,
+		1, -1, 0,
+		1, 1, 0
+	};
+
+	glGenBuffers(1, &m_VBOTexture);
+
+	glBindBuffer(GL_ARRAY_BUFFER, m_VBOTexture);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(texrect), texrect, GL_STATIC_DRAW);
 
 }
 
@@ -500,7 +611,7 @@ void Renderer::DrawSolidRect(float x, float y, float z, float size, float r, flo
 
 	glDisableVertexAttribArray(attribPosition);
 
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	//glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 float gTime = 0;
@@ -509,7 +620,7 @@ void Renderer::DrawTriangle()
 {
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	gTime += 0.0001f;
+	//gTime += 0.0001f;
 
 	glUseProgram(m_TriangleShader);
 
@@ -572,7 +683,7 @@ int g_CurrNum = 0;
 
 void Renderer::DrawFS()
 {
-	gTime += 0.09f;
+	//gTime += 0.09f;
 	GLuint shader = m_FSShader;
 	glUseProgram(shader);
 
@@ -590,7 +701,6 @@ void Renderer::DrawFS()
 
 	g_CurrNum++;
 	if (g_CurrNum > 9) g_CurrNum = 0;
-	Sleep(200);
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, m_RgbTexture);
@@ -642,7 +752,7 @@ void Renderer::DrawDummy()
 
 	int uTime = glGetUniformLocation(shader, "u_Time");
 	glUniform1f(uTime, gTime);
-	gTime += 0.016f;
+	gTime += 0.012f;
 
 	int uPHTex = glGetUniformLocation(shader, "u_PHTex");
 	glUniform1i(uPHTex, 0);
@@ -660,7 +770,75 @@ void Renderer::DrawDummy()
 	glVertexAttribPointer(aPos, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
 
 	glDrawArrays(GL_TRIANGLES, 0, m_VBO_DummyCount);
+
+	DrawTexture(m_PHTexture, 0.5, -0.5, 0.5, true);
 }
+
+void Renderer::DrawDummy_FBO()
+{
+	//Bind Framebuffer 
+	glBindFramebuffer(GL_FRAMEBUFFER, m_FBO);
+	glViewport(0, 0, 512, 512);
+
+	//Draw
+	DrawDummy();
+	
+	//MainFramebuffer
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glViewport(0, 0, 700, 700);
+
+	//DrawTexture
+	DrawTexture(m_FBO_Texture, 0, 0, 0.5, false);
+}
+
+void Renderer::DrawToFBO(GLuint fbo, void (Renderer::* drawFunc)(), GLuint tex, float x, float y, float scale, bool bFlip)
+{
+	// FBO에 그리기
+	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+	glViewport(0, 0, 512, 512);
+	(this->*drawFunc)();
+
+	// 기본 프레임버퍼로 복원
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glViewport(0, 0, 700, 700);
+	DrawTexture(tex, x, y, scale, bFlip);
+}
+
+void Renderer::DrawAll_FBO()
+{
+	DrawToFBO(m_FBO, &Renderer::DrawDummy, m_FBO_Texture, -0.5f, -0.5f, 0.5f, false);
+	DrawToFBO(m_FBO1, &Renderer::DrawTriangle, m_FBO1_Texture, 0.5f, 0.5f, 0.5f, false);
+	DrawToFBO(m_FBO2, &Renderer::DrawFS, m_FBO2_Texture, -0.5f, 0.5f, 0.5f, false);
+}
+
+void Renderer::DrawTexture(GLuint texID, float x, float y, float scale, bool bFlip)
+{
+	int shader = m_TextureShader;
+	glUseProgram(shader);
+
+	int uTex = glGetUniformLocation(shader, "u_Tex");
+	glUniform1i(uTex, 0);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, texID);
+
+	int uTrans = glGetUniformLocation(shader, "u_Trans");
+	glUniform4f(uTrans, x, y, 0, scale);
+	int uFlip = glGetUniformLocation(shader, "u_Flip");
+	glUniform1i(uFlip, bFlip);
+
+	int attribPosition = glGetAttribLocation(shader, "a_Pos");
+	glEnableVertexAttribArray(attribPosition);
+	glBindBuffer(GL_ARRAY_BUFFER, m_VBOTexture);
+
+	glVertexAttribPointer(attribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, 0);
+
+	glDrawArrays(GL_TRIANGLES, 0, 6);
+
+	glDisableVertexAttribArray(attribPosition);
+
+	//glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
 
 void Renderer::GetGLPosition(float x, float y, float* newX, float* newY)
 {
