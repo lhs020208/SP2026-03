@@ -4,6 +4,8 @@
 #version 330
 
 layout(location=0) out vec4 FragColor;
+layout(location=1) out vec4 FragColor1;
+layout(location=2) out vec4 FragColor2;
 
 in vec2 v_Tex;
 uniform float u_Time;
@@ -72,7 +74,88 @@ void Nums()
 	FragColor = texture(u_NumsTex, tex);
 }
 
+vec4 RainDrop()
+{
+	float accum = 0;
+	for (int i = 0; i < 500; ++i)
+	{
+		float sTime = u_Points[i].z;
+		float lTime = u_Points[i].w;
+		float newTime = u_Time - sTime;
+		if (newTime > 0)
+		{
+			float t = fract(newTime / lTime);
+			float OneMinus = 1 - t;
+			t = t * lTime;
+			vec2 center = u_Points[i].xy;
+			vec2 currPos = v_Tex;
+			float count = 5;
+			float range = t/5;
+
+			float d = distance(center, currPos);
+			float fade = (1/range) * clamp(range - d, 0, 1);
+
+			float grey = pow(
+				abs(sin(d * 4 * c_PI * count - newTime * 10)), 
+				4);
+
+			accum += grey * fade * OneMinus;
+		}
+	}
+	return vec4(accum);
+}
+
+vec4 Flag()
+{
+	float amp = 0.5;
+	float speed = 8;
+	float sininput = v_Tex.x * c_PI * 2 - u_Time * speed;
+	float sinValue = v_Tex.x *amp*(((sin(sininput) + 1) / 2)-0.5)+ 0.5;
+	
+	float FWidth = 0.0;
+	float width = 0.5 * mix(1, FWidth, v_Tex.x);
+	float grey = 0;
+
+	if(v_Tex.y < sinValue + width/2 && v_Tex.y > sinValue - width/2)
+	{
+		grey = 1;
+	}
+	else
+	{
+		grey = 0;
+	}
+
+	return vec4(grey);
+}
+
+vec4 Flame()
+{
+	float amp = 0.5;
+	float speed = 8;
+	float newY = 1 - v_Tex.y;
+
+	float sininput = newY * c_PI * 2 - u_Time * speed;
+	float sinValue = newY *amp*(((sin(sininput) + 1) / 2)-0.5)+ 0.5;
+	
+	float FWidth = 0.0;
+	float width = 0.5 * mix(1, FWidth, newY);
+	float grey = 0;
+
+	if(v_Tex.x < sinValue + width/2 && v_Tex.x > sinValue - width/2)
+	{
+		grey = 1;
+	}
+	else
+	{
+		grey = 0;
+	}
+
+	return vec4(grey);
+}
+
 void main()
 {
-	Nums();
+	FragColor = RainDrop();
+	FragColor1 = Flame();
+	FragColor2 = Flag();
 }

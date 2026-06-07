@@ -25,6 +25,7 @@ public:
 	void DrawDummy_FBO();
 	void DrawToFBO(GLuint fbo, void (Renderer::* drawFunc)(), GLuint tex, float x, float y, float scale, bool bFlip);
 	void DrawAll_FBO();
+	void DrawMultipleRenderTarget();
 
 	void GenParticles(int num);
 	GLuint CreatePngTexture(char* filePath, GLuint samplingMethod);
@@ -75,4 +76,9 @@ private:
 	GLuint m_FBO1_Texture = 0;
 	GLuint m_FBO2 = 0;
 	GLuint m_FBO2_Texture = 0;
+
+	GLuint m_MRT_FBO = 0;
+	GLuint m_MRT_FBO_Texture0 = 0;
+	GLuint m_MRT_FBO_Texture1 = 0;
+	GLuint m_MRT_FBO_Texture2 = 0;
 };
