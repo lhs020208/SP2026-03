@@ -347,6 +347,34 @@ void Renderer::GenFBOs()
 		assert(0);
 	}
 
+	glGenTextures(1, &m_MRT_HDR_FBO_HighTexture);
+	glBindTexture(GL_TEXTURE_2D, m_MRT_HDR_FBO_HighTexture);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, 700, 700, 0, GL_RGBA, GL_FLOAT, NULL);
+
+	glGenTextures(1, &m_MRT_HDR_FBO_LowTexture);
+	glBindTexture(GL_TEXTURE_2D, m_MRT_HDR_FBO_LowTexture);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, 700, 700, 0, GL_RGBA, GL_FLOAT, NULL);
+
+	glGenFramebuffers(1, &m_MRT_HDR_FBO);
+	glBindFramebuffer(GL_FRAMEBUFFER, m_MRT_HDR_FBO);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_MRT_HDR_FBO_LowTexture, 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, m_MRT_HDR_FBO_HighTexture, 0);
+
+	//check!!
+	status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+	if (status != GL_FRAMEBUFFER_COMPLETE)
+	{
+		assert(0);
+	}
+
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
@@ -668,7 +696,7 @@ void Renderer::DrawTriangle()
 {
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	//gTime += 0.0001f;
+	gTime += 0.01f;
 
 	glUseProgram(m_TriangleShader);
 
@@ -725,6 +753,29 @@ void Renderer::DrawTriangle()
 	glDisableVertexAttribArray(attribRV3);
 	glDisableVertexAttribArray(attribTex);
 	glDisableVertexAttribArray(attribRGB);
+}
+
+void Renderer::DrawTriangle_Bloom()
+{
+	glBindFramebuffer(GL_FRAMEBUFFER, m_MRT_HDR_FBO);
+	GLenum DrawBuffers[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
+	glDrawBuffers(2, DrawBuffers);
+
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	glClearDepth(1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glViewport(0, 0, 700, 700);
+
+	DrawTriangle();
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glViewport(0, 0, 700, 700);
+
+	GLenum ResetDrawBuffers[1] = { GL_COLOR_ATTACHMENT0 };
+	glDrawBuffers(1, ResetDrawBuffers);
+
+	DrawTexture(m_MRT_HDR_FBO_LowTexture, -0.5f, 0.0f, 0.5f, false);
+	DrawTexture(m_MRT_HDR_FBO_HighTexture, 0.5f, 0.0f, 0.5f, false);
 }
 
 int g_CurrNum = 0;

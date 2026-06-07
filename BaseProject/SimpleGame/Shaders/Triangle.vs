@@ -67,7 +67,44 @@ void shape()
 	v_Tex = a_Tex;
 }
 
+void Falling()
+{
+    float startTime = a_RV2 * 3;
+    float newTime = u_Time - startTime;
+
+    if(newTime > 0)
+    {
+        float lifeScale = 2.0;
+        float lifeTime = 0.5 + a_RV3 * lifeScale;
+        float t = lifeTime*fract(newTime/lifeTime); //0~lifeTime구간 반복
+        float tt = t*t;
+        float vx, vy;
+        float sx, sy;
+        vx = a_Vel.x/30;
+        vy = a_Vel.y/30;
+
+        sx = a_Position.x * (1-psudoRandom(a_RV1)) + sin(a_RV1*2*C_PI);
+        sy = a_Position.y * (1-psudoRandom(a_RV1)) + cos(a_RV1*2*C_PI);
+
+        vec4 newPos;
+        newPos.x = sx + vx*t;
+        newPos.y = sy + vy*t + 0.5*C_G[1]*tt;
+        newPos.z = 0;
+        newPos.w = 1;
+
+        gl_Position = newPos;
+        v_Grey = 1;
+    }
+    else
+    {
+        gl_Position = vec4(-1000, 0, 0, 1);
+    }
+
+	v_Color = a_RGB;
+	v_Tex = a_Tex;
+}
+
 void main()
 {
-	shape();
+	Falling();
 }
