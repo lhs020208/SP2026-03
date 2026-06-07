@@ -172,6 +172,10 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Shaders\BlurH.glsl" />
+    <None Include="Shaders\BlurH.vs" />
+    <None Include="Shaders\BlurV.glsl" />
+    <None Include="Shaders\BlurV.vs" />
     <None Include="Shaders\Dummy.glsl" />
     <None Include="Shaders\Dummy.vs" />
     <None Include="Shaders\FS.glsl" />

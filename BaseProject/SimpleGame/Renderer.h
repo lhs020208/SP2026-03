@@ -32,6 +32,8 @@ public:
 	GLuint CreatePngTexture(char* filePath, GLuint samplingMethod);
 	void GenDummyMesh(int rx, int ry);
 	void GenFBOs();
+	void DrawGaussianBlur(GLuint texID, GLuint targetFBOID, GLuint shader);
+
 
 private:
 	void Initialize(int windowSizeX, int windowSizeY);
@@ -86,4 +88,9 @@ private:
 	GLuint m_MRT_HDR_FBO = 0;
 	GLuint m_MRT_HDR_FBO_HighTexture = 0;  //float Tex
 	GLuint m_MRT_HDR_FBO_LowTexture = 0; //float Tex
+
+	GLuint m_PingpongFBO[2];
+	GLuint m_PingpongTexture[2];
+	GLuint m_BlurH_Shader = 0;
+	GLuint m_BlurV_Shader = 0;
 };

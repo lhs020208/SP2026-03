@@ -6277,7 +6277,7 @@ namespace loadBMP
 		outHeight = *(int*)&(header[0x16]);
 
 		// Some BMP files are misformatted, guess missing information
-		if (imageSize == 0)    imageSize = outWidth * outHeight * 3; // 3 : one byte for each Red, Green and Blue component
+		if (imageSize == 0)    imageSize = outWidth * outHeight * 3; // 3 : one byte for each Red, Green and Blur component
 		if (dataPos == 0)      dataPos = 54; // The BMP header is done that way
 
 											 // Create a buffer

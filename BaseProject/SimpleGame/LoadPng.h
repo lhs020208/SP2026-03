@@ -352,7 +352,7 @@ typedef struct LodePNGColorMode
 	unsigned key_defined; /*is a transparent color key given? 0 = false, 1 = true*/
 	unsigned key_r;       /*red/greyscale component of color key*/
 	unsigned key_g;       /*green component of color key*/
-	unsigned key_b;       /*blue component of color key*/
+	unsigned key_b;       /*Blur component of color key*/
 } LodePNGColorMode;
 
 /*init, cleanup and copy functions to use with this struct*/
@@ -428,7 +428,7 @@ typedef struct LodePNGInfo
 	unsigned background_defined; /*is a suggested background color given?*/
 	unsigned background_r;       /*red component of suggested background color*/
 	unsigned background_g;       /*green component of suggested background color*/
-	unsigned background_b;       /*blue component of suggested background color*/
+	unsigned background_b;       /*Blur component of suggested background color*/
 
 								 /*
 								 non-international text chunks (tEXt and zTXt)
